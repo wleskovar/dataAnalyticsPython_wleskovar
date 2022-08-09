@@ -1,10 +1,11 @@
 from array import array
+from unittest import result
 import pandas as pd
 from pathlib import Path
 from typing import List, Optional #para un control de los tipos de datos
 
 
-def data_processing(list_files:Optional[List[Path]]) -> None:
+def data_processing(list_files:Optional[List[Path]]) -> pd.DataFrame:
     """ realizo la normalizacion de los datos y armo un unico dataFrame
 
     Args:
@@ -19,20 +20,20 @@ def data_processing(list_files:Optional[List[Path]]) -> None:
     unique_data = normalize_data(list_files)
 
     # guardo los resultados en una planilla Excel ---------------------------------------------
-    url_result = Path.cwd()
-    result = Path(url_result/'resultados.xlsx')
-    try:
-        writer = pd.ExcelWriter(result, engine="openpyxl", mode='a')
-    except:
-        writer = pd.ExcelWriter(result, engine="openpyxl")
+    # url_result = Path.cwd()
+    # result = Path(url_result/'resultados.xlsx')
+    # try:
+    #     writer = pd.ExcelWriter(result, engine="openpyxl", mode='a')
+    # except:
+    #     writer = pd.ExcelWriter(result, engine="openpyxl")
 
-    unique_data.to_excel(writer, 'resultados')
-    # ---Al ejecutar save() si la hoja de Excel esta abierta da Error---
-    try:
-        writer.save()
-        print("Planilla Excel grabada exitosamente")
-    except:
-        print("La planilla Excel esta abierta y debe estar cerrada \n")
+    # unique_data.to_excel(writer, 'resultados')
+    # # ---Al ejecutar save() si la hoja de Excel esta abierta da Error---
+    # try:
+    #     writer.save()
+    #     print("Planilla Excel grabada exitosamente")
+    # except:
+    #     print("La planilla Excel esta abierta y debe estar cerrada \n")
     #--------------------------------------------------------------------------------------------
 
     # genero la tabla con informacio
@@ -41,6 +42,8 @@ def data_processing(list_files:Optional[List[Path]]) -> None:
     #   o Cantidad de registros totales por categoría
     #   o Cantidad de registros totales por fuente
     #   o Cantidad de registros por provincia y categoría
+    results = tot_register_categori(unique_data)
+    print(results)
     
     # resultados del procesamiento de cines
     #  Procesar la información de cines para poder crear una tabla que contenga:
@@ -48,6 +51,8 @@ def data_processing(list_files:Optional[List[Path]]) -> None:
     #   o Cantidad de pantallas
     #   o Cantidad de butacas
     #   o Cantidad de espacios INCAA
+
+    return unique_data
         
 
 def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
@@ -164,3 +169,12 @@ def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
     )
     return normalized_data
 
+# defino una funcion para realizar la tabla de totales de registros por catergori, utilizo pivot_table
+def tot_register_categori( data:Optional[pd.DataFrame])-> pd.DataFrame:
+    #results = data.pivot_table(index='provincia', columns='categoria', aggfunc='count')
+
+    results = data.categoria.groupby(data.provincia).count()
+    results.index.name = 'Categoria'
+    
+    
+    return results

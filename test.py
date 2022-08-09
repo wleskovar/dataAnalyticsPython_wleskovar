@@ -2,6 +2,7 @@ from alkemy_data_builder.getCSV import getCVS
 from alkemy_data_builder.make_estructure_dir import make_estructure_dir
 from alkemy_data_builder.save_datasets import save_datasets
 from alkemy_data_builder.data_processing import data_processing
+from alkemy_data_builder.database import database
 
 
 #------------------------- Archivos fuente --------------------------------------------------------------------------------#
@@ -27,7 +28,8 @@ files_to_process = save_datasets(dic_datasets, url_root)
 
 
 #------------------------- Procesamiento de datos -------------------------------------------------------------------------#
-data_processing(files_to_process)
+data = data_processing(files_to_process)
+database(data)
 #------------------------- Creacion de tablas en la Base de datos ---------------------------------------------------------#
 
 #------------------------- Actualizacion de la base de datos ---------------------------------------------------------------#
