@@ -45,7 +45,7 @@ def save_datasets(dic_datasets:Optional[dict], url_root:Optional[Path]) -> str:
     # grabo el archivo
     path_csv = Path(url_museos/file_csv)
     try:
-        dic_datasets.get("museos").to_csv(path_csv, sep= ',', encoding="utf-8")
+        dic_datasets.get("museos").to_csv(path_csv, sep= ',', encoding="UTF-8")
         files_creates.append(path_csv)
     except Exception as ex:
         print(ex)
@@ -60,7 +60,7 @@ def save_datasets(dic_datasets:Optional[dict], url_root:Optional[Path]) -> str:
     # grabo el archivo
     path_csv = Path(url_cines/file_csv)
     try:
-        dic_datasets.get("cines").to_csv(path_csv, sep= ',', encoding="utf-8")
+        dic_datasets.get("cines").to_csv(path_csv, sep= ',', encoding="UTF-8")
         files_creates.append(path_csv)
     except Exception as ex:
         print(ex)
@@ -75,7 +75,7 @@ def save_datasets(dic_datasets:Optional[dict], url_root:Optional[Path]) -> str:
     # grabo el archivo
     path_csv = Path(url_bibliotecas/file_csv)
     try:
-        dic_datasets.get("bibliotecas").to_csv(path_csv, sep= ",", encoding="utf-8")
+        dic_datasets.get("bibliotecas").to_csv(path_csv, sep= ",", encoding="UTF-8")
         files_creates.append(path_csv)
     except Exception as ex:
         print(ex)

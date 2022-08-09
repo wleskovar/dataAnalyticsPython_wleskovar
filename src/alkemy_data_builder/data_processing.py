@@ -43,8 +43,7 @@ def data_processing(list_files:Optional[List[Path]]) -> pd.DataFrame:
     #   o Cantidad de registros totales por fuente
     #   o Cantidad de registros por provincia y categoría
     results = tot_register_categori(unique_data)
-    print(results)
-    
+
     # resultados del procesamiento de cines
     #  Procesar la información de cines para poder crear una tabla que contenga:
     #   o Provincia
@@ -74,7 +73,7 @@ def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
                             'Info_adicional',               
                             'fuente',
                             'jurisdiccion',
-                            'aÃ±o_inauguracion',
+                            'año_inauguracion',
                             'actualizacion'], axis=1)
 
             data.rename(columns= {  'Cod_Loc': 'cod_localidad',
@@ -100,7 +99,7 @@ def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
                             'Departamento',
                             'Piso',
                             'cod_area',
-                            'InformaciÃ³n adicional',
+                            'Información adicional',
                             'Latitud',
                             'Longitud',                 
                             'TipoLatitudLongitud',
@@ -109,49 +108,50 @@ def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
                             'Pantallas',
                             'Butacas',
                             'espacio_INCAA',
-                            'aÃ±o_actualizacion'], axis=1)
+                            'año_actualizacion'], axis=1)
 
             data.rename(columns= {  'Cod_Loc': 'cod_localidad',
                                     'IdProvincia': 'id_provincia',
                                     'IdDepartamento': 'id_departamento',
-                                    'CategorÃ­a': 'categoria',
+                                    'Categoría': 'categoria',
                                     'Provincia': 'provincia',
                                     'Localidad': 'localidad',
                                     'Nombre': 'nombre',
-                                    'DirecciÃ³n': 'domicilio',
+                                    'Dirección': 'domicilio',
                                     'CP': 'codigo_postal',
-                                    'TelÃ©fono': 'telefono',
+                                    'Teléfono': 'telefono',
                                     'Mail': 'mail',
                                     'Web': 'web'}, inplace=True)
             data['fuente'] = 'cines'
             data_frame.append(data)
         else:
             df = pd.read_csv(data, sep= ',', encoding="utf-8")
+            print(df)
             data = df.drop(['Unnamed: 0',
                             'Observacion',             
                             'Subcategoria',
                             'Departamento',
                             'Piso',
                             'Cod_tel',
-                            'InformaciÃ³n adicional',
+                            'Información adicional',
                             'Latitud',
                             'Longitud',          
                             'TipoLatitudLongitud',
                             'Fuente',
                             'Tipo_gestion',
-                            'aÃ±o_inicio',
-                            'AÃ±o_actualizacion'], axis=1)
+                            'año_inicio',
+                            'Año_actualizacion'], axis=1)
 
             data.rename(columns= {  'Cod_Loc': 'cod_localidad',
                                     'IdProvincia': 'id_provincia',
                                     'IdDepartamento': 'id_departamento',
-                                    'CategorÃ­a': 'categoria',
+                                    'Categoría': 'categoria',
                                     'Provincia': 'provincia',
                                     'Localidad': 'localidad',
                                     'Nombre': 'nombre',
                                     'Domicilio': 'domicilio',
                                     'CP': 'codigo_postal',
-                                    'TelÃ©fono': 'telefono',
+                                    'Teléfono': 'telefono',
                                     'Mail': 'mail',
                                     'Web': 'web'}, inplace=True)
             data['fuente'] = 'bibliotecas'
