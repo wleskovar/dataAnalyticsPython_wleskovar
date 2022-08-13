@@ -6,6 +6,7 @@ ALKEMY = ".alkemy"
 MUSEOS = "museos"
 CINES = "cines"
 BIBLIOTECAS = "bibliotecas"
+RESULTADOS =  "resultados"
 
 def make_estructure_dir(url_base:Optional[str] = None) -> Path:
     """ Esta funcion crea el arbol de directorios para almacenar los dataset de trabajo, .alkemy es la raiz de las categorias
@@ -38,6 +39,11 @@ def make_estructure_dir(url_base:Optional[str] = None) -> Path:
             Path(dataset_path).mkdir(parents=True)
 
         dataset_path = url_base/ALKEMY/BIBLIOTECAS
+        if not (Path(dataset_path).exists()):
+            Path(dataset_path).mkdir(parents=True)
+        # si no existe se crea un directorio donde guardar los archivos CSV con el resultado de tablas de la informacion resultante de
+        # procesamiento de los datos.
+        dataset_path = url_base/ALKEMY/RESULTADOS
         if not (Path(dataset_path).exists()):
             Path(dataset_path).mkdir(parents=True)
     else:

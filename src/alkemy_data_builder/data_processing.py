@@ -5,56 +5,20 @@ from pathlib import Path
 from typing import List, Optional #para un control de los tipos de datos
 
 
-def data_processing(list_files:Optional[List[Path]]) -> pd.DataFrame:
-    """ realizo la normalizacion de los datos y armo un unico dataFrame
 
+def data_processing(list_files:Optional[List[Path]]) -> pd.DataFrame:
+    """ A partir de los datos de las fuentes, se normalizan y se crea una unica tabla.
+        
     Args:
-        list_files (Optional[List[Path]]): la funcion recibe como parametro una lista con las rutas de los archivos CSV fuentes
+        list_files (Optional[List[Path]]): se recibe una lista de los archivso fuentes CSV a unir en una unica tabla
+
+    Returns:
+        pd.DataFrame: se retorna la tabla normalizada que se utilizara para popular la base de datos
     """
 
     # realizo la normalizacion de los datos y armo un unico dataFrame
-    # Normalizar toda la información de Museos, Salas de Cine y Bibliotecas
-    # Populares, para crear una única tabla.
-    # Se incluye una columna con la fuente de datos. 
+    # Normalizar toda la información de Museos, Salas de Cine y Bibliotecas Populares, para crear una única tabla.
     
-    unique_data = normalize_data(list_files)
-
-    # guardo los resultados en una planilla Excel ---------------------------------------------
-    # url_result = Path.cwd()
-    # result = Path(url_result/'resultados.xlsx')
-    # try:
-    #     writer = pd.ExcelWriter(result, engine="openpyxl", mode='a')
-    # except:
-    #     writer = pd.ExcelWriter(result, engine="openpyxl")
-
-    # unique_data.to_excel(writer, 'resultados')
-    # # ---Al ejecutar save() si la hoja de Excel esta abierta da Error---
-    # try:
-    #     writer.save()
-    #     print("Planilla Excel grabada exitosamente")
-    # except:
-    #     print("La planilla Excel esta abierta y debe estar cerrada \n")
-    #--------------------------------------------------------------------------------------------
-
-    # genero la tabla con informacio
-    # Procesar los datos conjuntos para poder generar una tabla con la siguiente
-    # información:
-    #   o Cantidad de registros totales por categoría
-    #   o Cantidad de registros totales por fuente
-    #   o Cantidad de registros por provincia y categoría
-    results = tot_register_categori(unique_data)
-
-    # resultados del procesamiento de cines
-    #  Procesar la información de cines para poder crear una tabla que contenga:
-    #   o Provincia
-    #   o Cantidad de pantallas
-    #   o Cantidad de butacas
-    #   o Cantidad de espacios INCAA
-
-    return unique_data
-        
-
-def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
     # inicializo el array con dataFrame normalizados
     data_frame = []
     for data in list_files:
@@ -88,8 +52,6 @@ def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
                                     'telefono': 'telefono',
                                     'Mail': 'mail',
                                     'Web': 'web'}, inplace=True)
-
-            data['fuente'] = 'museos'
             data_frame.append(data)
 
         elif (source == 'cines'):
@@ -122,11 +84,9 @@ def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
                                     'Teléfono': 'telefono',
                                     'Mail': 'mail',
                                     'Web': 'web'}, inplace=True)
-            data['fuente'] = 'cines'
             data_frame.append(data)
         else:
             df = pd.read_csv(data, sep= ',', encoding="utf-8")
-            print(df)
             data = df.drop(['Unnamed: 0',
                             'Observacion',             
                             'Subcategoria',
@@ -154,7 +114,6 @@ def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
                                     'Teléfono': 'telefono',
                                     'Mail': 'mail',
                                     'Web': 'web'}, inplace=True)
-            data['fuente'] = 'bibliotecas'
             data_frame.append(data)
     normalized_data = pd.concat(data_frame,
                                 axis=0,
@@ -167,14 +126,30 @@ def normalize_data(list_files:Optional[List[Path]]) -> pd.DataFrame:
                                 copy=True,
 
     )
-    return normalized_data
+    # limpio los datos de provincia
+    final_data = cleaning_provinces( normalized_data)
+    return final_data
 
-# defino una funcion para realizar la tabla de totales de registros por catergori, utilizo pivot_table
-def tot_register_categori( data:Optional[pd.DataFrame])-> pd.DataFrame:
-    #results = data.pivot_table(index='provincia', columns='categoria', aggfunc='count')
+    
+def cleaning_provinces(data:Optional[pd.DataFrame]) -> pd.DataFrame:
+    """ A partir observar los datos, se detectaron algunos registros con diferencias en la carga de las provicias y un 
+        registro en particular de Salta en donde se asigno la provincia de Neuquen.
+        En esta funcion se corrigen esos datos detectados.
 
-    results = data.categoria.groupby(data.provincia).count()
-    results.index.name = 'Categoria'
+    Args:
+        data (pd.DataFrame): se recibe el DataFrame que se esta armando con la informacion de todas las fuentes
+
+    Returns:
+       pd.DataFreme: se retorna el DataFrame con las correciones realizadas a provincia.
+    """
+    data.provincia= data.provincia.apply(lambda x: str(x).replace('Tierra del Fuego, Antártida e Islas del Atlántico Sur', 'Tierra del Fuego'))
+    data.provincia= data.provincia.apply(lambda x: str(x).replace('Santa Fé', 'Santa Fe'))
+    data.provincia= data.provincia.apply(lambda x: str(x).replace('Neuquén ', 'Neuquén'))
+    mask = (data.id_provincia == 58) & (data.provincia == 'Salta')
+    data.loc[mask, 'id_provincia'] = 66
+    data.loc[mask, 'cod_localidad'] = 66028050
+    data.loc[mask, 'codigo_postal'] = 'A4400' 
     
-    
-    return results
+    return data         
+
+
