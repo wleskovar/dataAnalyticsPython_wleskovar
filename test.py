@@ -49,6 +49,6 @@ tot_register_category(data, url_root)
 info_cines(df_cines, url_root)
 
 #------------------------- Creacion de tablas en la Base de datos ---------------------------------------------------------#
-#database(data)
+database(data)
 
 #------------------------- Actualizacion de la base de datos ---------------------------------------------------------------#
