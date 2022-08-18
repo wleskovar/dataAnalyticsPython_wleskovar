@@ -1,68 +1,98 @@
-from tokenize import String
+import logging
+from decouple import config
+
 import pandas as pd
 from datetime import datetime as dt_dt 
 from sqlalchemy import create_engine, Integer, String, DateTime
 from typing import Optional #para un control de los tipos de datos
 
-def database(df:Optional[pd.DataFrame]) -> None:
+def _get_config():
+    # Python_decouple
+    confi = {'engine': config('ENGINE'),
+             'usr': config('USR'),
+             'password': config('PASSWORD'),
+             'port': config('PORT'),
+             'database': config('DATABASE') }
+    return confi
+
+def _get_connection(ENGINE, USR, PASSWORD, PORT, DATABASE):
+    """ Se genera la coneccion a la base de datos correspondiente
+
+    Returns:
+        _type_: se retorna la coneccion para operar con la base de datos.
+    """
+    return create_engine(f'{ENGINE}://{USR}:{PASSWORD}@localhost:{PORT}/{DATABASE}')
+
+def database(df:Optional[pd.DataFrame], confi=None) -> None:
     """ En esta funcion se graban las tablas en la base de datos 'alkemydb' en Postgresql.
 
     Args:
         df (Optional[pd.DataFrame]): se recibe como parametro el DataFrame normalizado a partir de las 3 fuentes de Museos, Cines y Biblitecas.
     """
+    
     # se llama a la funcion like_table para preparar la informacion de las dos tablas a grabar en la base de datos
     tables_dic = like_table(df)
     data = tables_dic.get('espacios')
     data_provincias = tables_dic.get('provincias')
-    engine = create_engine('postgresql://postgres:1234@localhost:5432/alkemydb')
-    data.to_sql( con = engine,
-                 name = 'espacios',
-                 schema='public',
-                 if_exists='replace',
-                 index=True,
-                 index_label='id',
-                 dtype={
-	                    "cod_localidad": Integer,
-                        "id_provincia": Integer,
-                        "id_departamento": Integer,
-                        "categoria": String(100),
-	                    "localidad": String(200),
-	                    "nombre": String(300),
-	                    "domicilio": String(300),
-	                    "codigo_postal": String(10),
-	                    "telefono": String(300),
-	                    "mail": String(300),
-	                    "web": String(300),
-	                    "fecha": DateTime
-                 },
-                 method='multi'
-                )
-    data_provincias.to_sql( con = engine,
-                 name = 'provincias',
-                 schema='public',
-                 if_exists='replace',
-                 index=True,
-                 index_label='id_provincia',
-                 dtype={
-	                    "provincia": String(150),
-	                    "fecha": DateTime
-                 },
-                 method='multi'
-                )
     
+    if confi is None:
+        confi = _get_config()
     
-    
-    print("paso por la base de datos!!!!")
+    ENGINE = confi.get('engine')
+    USR = confi.get('usr')
+    PASSWORD = confi.get('password')
+    PORT = confi.get('port')
+    DATABASE = confi.get('database')
 
-#--------------------------------------------------------------------------------------
-#    Prueba de un query relacionando las tablas por medio de la clave foranea
-#
-    # sql = '''select e.id, e.cod_localidad , e.id_provincia,  p.provincia
-    #         from espacios e 
-    #         inner join provincias p on e.id_provincia = p.id_provincia'''
-    # data_query = pd.read_sql_query(sql, engine)
-    # print(data_query)
-#--------------------------------------------------------------------------------------
+    logger = logging.getLogger()
+    try:
+        # genero un objeto con la coneccion a la base de datos
+        engine = _get_connection(ENGINE, USR, PASSWORD, PORT, DATABASE)
+        logger.info(f"Coneccion exitosa a la base de datos: {DATABASE} por el puerto: {PORT}")
+        data.to_sql(    con = engine,
+                        name = 'espacios',
+                        schema='public',
+                        if_exists='replace',
+                        index=True,
+                        index_label='id',
+                        dtype={
+	                           "cod_localidad": Integer,
+                               "id_provincia": Integer,
+                               "id_departamento": Integer,
+                               "categoria": String(100),
+	                           "localidad": String(200),
+	                           "nombre": String(300),
+	                           "domicilio": String(300),
+	                           "codigo_postal": String(10),
+	                           "telefono": String(300),
+	                           "mail": String(300),
+	                           "web": String(300),
+	                           "fecha": DateTime
+                        },
+                        method='multi'
+                    )
+        data_provincias.to_sql( con = engine,
+                                name = 'provincias',
+                                schema='public',
+                                if_exists='replace',
+                                index=True,
+                                index_label='id_provincia',
+                                dtype={
+	                                   "provincia": String(150),
+	                                   "fecha": DateTime
+                                },
+                                method='multi'
+                        )
+
+
+        # para el logging
+        logging.info("Se actualizaron las tablas de espacios y provincias en la base de datos")
+    except Exception as ex:
+        logger.error(f"La coneccion a la base de datos: {DATABASE}, no se pudo realizar")
+        logger.error(ex)
+        raise ex
+    
+    
 
 def like_table(data:Optional[pd.DataFrame]) -> dict:
     """ En esta funcion se separa el DataFreme que se recibe en los datos para la tabla 'espacios' y la tabla 'provincias'

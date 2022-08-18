@@ -1,6 +1,9 @@
+from asyncio.log import logger
 from datetime import date as dt_date
 from pathlib import Path
 from typing import Optional #para un control de los tipos de datos
+
+import logging
 
 ALKEMY = ".alkemy"
 MUSEOS = "museos"
@@ -17,17 +20,12 @@ def make_estructure_dir(url_base:Optional[str] = None) -> Path:
     Args:
         url_base (Optional[str], optional): puede o no recibir parametros, si lo recibe sera la raiz de donde armar el arbol. Defaults to None.
     """
+    logger = logging.getLogger()
+    
     url_base = url_base if url_base is not None else Path.cwd()
     
-    # A traves de un archivo de control "alkemy.txt" verificamos si la estructura ya fue creada, si esta no fue creada
-    # se graba el archivo txt con la fecha en que se creo la estructura.
-    file_control = Path(url_base/"alkemy.txt")
+    file_control = Path(url_base/ALKEMY/"alkemy.txt")
     if not file_control.exists():
-        file_open =open(file_control, 'w')
-        day_create = dt_date.strftime(dt_date.today(), "%Y/%m/%d")
-        print(day_create)
-        file_open.write(day_create)
-        file_open.close()
         
         # chequear si la carpeta existe, si no, la crea
         dataset_path = url_base/ALKEMY/MUSEOS
@@ -46,10 +44,21 @@ def make_estructure_dir(url_base:Optional[str] = None) -> Path:
         dataset_path = url_base/ALKEMY/RESULTADOS
         if not (Path(dataset_path).exists()):
             Path(dataset_path).mkdir(parents=True)
+
+        # A traves de un archivo de control "alkemy.txt" verificamos si la estructura ya fue creada, si esta no fue creada
+        # se graba el archivo txt con la fecha en que se creo la estructura.
+        
+        file_open =open(file_control, 'w+')
+        day_create = dt_date.strftime(dt_date.today(), "%Y/%m/%d")
+        file_open.write(day_create)
+        file_open.close()
+        # para el logging
+        logger.info('Se genero la estructura de directorios para almacenar los archivos CSV y el resultado de los reportes')
     else:
         file_open =open(file_control, 'r')
         date_create = file_open.read()
-        print("La estructura de directorios ya fue creada el " + date_create )
+        # para el logging
+        logger.warning("Se quiso volver a generar la estructura de directorios y ya estaba creada creada el " + date_create )
     
     return Path(url_base/ALKEMY)
     

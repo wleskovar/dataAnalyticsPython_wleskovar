@@ -1,8 +1,9 @@
-from array import array
-from unittest import result
+from asyncio.log import logger
 import pandas as pd
 from pathlib import Path
 from typing import List, Optional #para un control de los tipos de datos
+
+import logging
 
 
 
@@ -15,7 +16,7 @@ def data_processing(list_files:Optional[List[Path]]) -> pd.DataFrame:
     Returns:
         pd.DataFrame: se retorna la tabla normalizada que se utilizara para popular la base de datos
     """
-
+    logger = logging.getLogger()
     # realizo la normalizacion de los datos y armo un unico dataFrame
     # Normalizar toda la información de Museos, Salas de Cine y Bibliotecas Populares, para crear una única tabla.
     
@@ -128,6 +129,8 @@ def data_processing(list_files:Optional[List[Path]]) -> pd.DataFrame:
     )
     # limpio los datos de provincia
     final_data = cleaning_provinces( normalized_data)
+    # para el logging
+    logger.info(f'Se genero un unico DataFrame con toda la informacion normalizada de las tres fuentes')
     return final_data
 
     

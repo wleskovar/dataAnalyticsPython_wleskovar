@@ -1,3 +1,4 @@
+from asyncio.log import logger
 from encodings.utf_8 import encode
 from importlib.resources import path
 from linecache import cache
@@ -5,6 +6,8 @@ import pandas as pd
 from datetime import date as dt_date
 from pathlib import Path
 from typing import Optional #para un control de los tipos de datos
+
+import logging
 
 MUSEOS = "museos"
 CINES = "cines"
@@ -25,6 +28,9 @@ def save_datasets(dic_datasets:Optional[dict], url_root:Optional[Path]) -> str:
     Returns:
         str: se retorna un array con la lista de los archivos CSV a procesar
     """
+
+    logger = logging.getLogger()
+
     # array donde se guardan los archivos grabados y a procesar
     files_creates = []
 
@@ -47,8 +53,12 @@ def save_datasets(dic_datasets:Optional[dict], url_root:Optional[Path]) -> str:
     try:
         dic_datasets.get("museos").to_csv(path_csv, sep= ',', encoding="UTF-8")
         files_creates.append(path_csv)
+        # para el logging
+        logger.info(f'Se grabo el archivo CSV {MUSEOS}')
     except Exception as ex:
-        print(ex)
+        # para el logging
+        logger.error(f'Error al querer grabar el archivo CSV {MUSEOS}')
+        logger.error(ex)
     
     # Cines
     # armo el directorio
@@ -62,8 +72,12 @@ def save_datasets(dic_datasets:Optional[dict], url_root:Optional[Path]) -> str:
     try:
         dic_datasets.get("cines").to_csv(path_csv, sep= ',', encoding="UTF-8")
         files_creates.append(path_csv)
+        # para el logging
+        logger.info(f'Se grabo el archivo CSV {CINES}')
     except Exception as ex:
-        print(ex)
+        # para el logging
+        logger.error(f'Error al querer grabar el archivo CSV {CINES}')
+        logger.error(ex)
     
     # Bibliotecas
     # armo el directorio
@@ -77,7 +91,11 @@ def save_datasets(dic_datasets:Optional[dict], url_root:Optional[Path]) -> str:
     try:
         dic_datasets.get("bibliotecas").to_csv(path_csv, sep= ",", encoding="UTF-8")
         files_creates.append(path_csv)
+        # para el logging
+        logger.info(f'Se grabo el archivo CSV {BIBLIOTECAS}')
     except Exception as ex:
-        print(ex)
+        # para el logging
+        logger.error(f'Error al querer grabar el archivo CSV {BIBLIOTECAS}')
+        logger.error(ex)
     return files_creates
    
