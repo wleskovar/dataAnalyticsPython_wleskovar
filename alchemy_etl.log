@@ -1,2 +1,13 @@
-2022-08-19 19:15:16,732|  ERROR|builder.py:59|_get_config|Problema con el archivo de configuracion .env
-2022-08-19 19:15:16,732|  ERROR|builder.py:62|_get_config|ENGINE not found. Declare it as envvar or define a default value.
+2022-08-19 19:23:20,026|   INFO|builder.py:126|load_data|Ejecutando modulo de carga y procesamiento de la informacion
+2022-08-19 19:23:20,030|   INFO|make_estructure_dir.py:56|make_estructure_dir|Se genero la estructura de directorios para almacenar los archivos CSV y el resultado de los reportes
+2022-08-19 19:23:22,140|   INFO|getCSV.py:26|getCSV|se obtuvieron los datos de la fuente: https://datos.cultura.gob.ar/dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/4207def0-2ff7-41d5-9095-d42ae8207a5d/download/museos_datosabiertos.csv
+2022-08-19 19:23:23,661|   INFO|getCSV.py:26|getCSV|se obtuvieron los datos de la fuente: https://datos.cultura.gob.ar/dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/392ce1a8-ef11-4776-b280-6f1c7fae16ae/download/cine.csv
+2022-08-19 19:23:25,784|   INFO|getCSV.py:26|getCSV|se obtuvieron los datos de la fuente: https://datos.cultura.gob.ar/dataset/37305de4-3cce-4d4b-9d9a-fec3ca61d09f/resource/01c6c048-dbeb-44e0-8efa-6944f73715d7/download/biblioteca_popular.csv
+2022-08-19 19:23:25,800|   INFO|save_datasets.py:66|save_datasets|Se grabo el archivo CSV museos
+2022-08-19 19:23:25,807|   INFO|save_datasets.py:85|save_datasets|Se grabo el archivo CSV cines
+2022-08-19 19:23:25,832|   INFO|save_datasets.py:104|save_datasets|Se grabo el archivo CSV bibliotecas
+2022-08-19 19:23:25,869|   INFO|data_processing.py:161|data_processing|Se genero un unico DataFrame con toda la informacion normalizada de las tres fuentes
+2022-08-19 19:23:25,882|   INFO|tot_register_category.py:37|tot_register_category|Se grabo un archivo CSV con los datos del reporte solicitado de cantidad de registros
+2022-08-19 19:23:25,889|   INFO|info_cines.py:38|info_cines|Se grabo un archivo CSV con los datos del reporte solicitado de cines
+2022-08-19 19:23:25,892|   INFO|database.py:56|database|Coneccion exitosa a la base de datos: alkemydb por el puerto: 5432
+2022-08-19 19:23:26,823|   INFO|database.py:94|database|Se actualizaron las tablas de espacios y provincias en la base de datos

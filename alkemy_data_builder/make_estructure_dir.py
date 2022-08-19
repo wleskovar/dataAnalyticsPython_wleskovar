@@ -20,7 +20,8 @@ def make_estructure_dir(url_base: Optional[str]) -> Path:
     Args:
         url_base (Optional[str], optional): puede o no recibir parametros, si lo recibe sera la raiz de donde armar el arbol. Defaults to None.
     """
-
+    logger = logging.getLogger()
+    
     url_base = url_base if url_base != "." else Path.cwd()
 
     file_control = Path(url_base / ALKEMY / "alkemy.txt")
