@@ -1,5 +1,4 @@
 /.alkemy
 __pycache__
 *.egg-info
-alkemy.txt
 *.xlsx
